@@ -13,12 +13,47 @@ const HTTP_ERR_MSG = {
 };
 
 export default class AdapterService {
-	async create(model, payload, options) {
+	async create(model, payload, options = {}) {
 		const data = await model.create(payload, {
 			raw: options.raw || true,
 			returning: options.returning || true,
 			...options,
 		});
+
+		return data;
+	}
+
+	async deleteByID(model, id, options = {}) {
+		let data = await model.destroy({ where: { id } }, options);
+
+		data = {
+			deleted: data === 1 ? true : false,
+			message:
+				data === 1
+					? 'Delete data success'
+					: 'There is no data within the database',
+		};
+
+		return data;
+	}
+
+	async flush(model, options) {
+		let data = await model.destroy({ truncate: true }, options);
+
+		return data;
+	}
+
+	async findByID(model, payload, options) {
+		const { id } = payload;
+		let data = await model.destroy({ where: { id } }, options);
+
+		data = {
+			deleted: data === 1 ? true : false,
+			message:
+				data === 1
+					? 'Delete data success'
+					: 'There is no data within the database',
+		};
 
 		return data;
 	}
@@ -53,5 +88,10 @@ export default class AdapterService {
 		};
 
 		return response;
+	}
+
+	static sendErrorResponse(res, options) {
+		if (options.transaction) options.transaction.rollback();
+		res.status(500).send(this.generateHTTPStatus(500));
 	}
 }

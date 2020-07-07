@@ -2,12 +2,29 @@ import AdapterService from './adapter.service';
 import models from '../database/models';
 
 export default class RoleService extends AdapterService {
-	async create(res, payload, options = {}) {
+	async create(payload) {
 		try {
-			const data = await super.create(models.role, payload, options);
+			const data = await super.create(models.role, payload);
 			return data;
 		} catch (error) {
-			res.status(500).send(AdapterService.generateHTTPStatus(500));
+			console.error(error);
+			throw Error();
+		}
+	}
+
+	async deleteByID({ id }) {
+		const transaction = models.sequelize.transaction();
+		try {
+			const data = await super.deleteByID(models.role, id, {
+				transaction,
+			});
+
+			await transaction.commit();
+			return data;
+		} catch (error) {
+			transaction.rollback();
+			console.error(error);
+			throw Error();
 		}
 	}
 }

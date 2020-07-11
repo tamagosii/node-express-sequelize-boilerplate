@@ -4,8 +4,15 @@
 	"description": "",
 	"main": "./src/app.js",
 	"scripts": {
-		"start": "npm start src/app.js",
 		"dev": "nodemon --exec babel-node src/app.js",
+		"create-seed": "sequelize seed:generate --name",
+		"create-migration": "sequelize migration:generate --name",
+		"migrate-all": "sequelize db:migrate",
+		"migrate-revert": "sequelize db:migrate:undo:all --to",
+		"migrate-undo": "sequelize db:migrate:undo",
+		"seed-all": "sequelize db:seed:all",
+		"seed-undo": "sequelize db:seed:undo",
+		"start": "npm start src/app.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "",
